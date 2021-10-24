@@ -18,15 +18,30 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
-
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
+
+app.get("/api/:date", (req, res) => {
+  let dateString = req.params.date;
+
+  if(!isNaN(Date.parse(dateString))){
+    let dateObject = new Date(dateString);
+    res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString()})
+  } else if(/\d{5,}/.test(dateString)){
+    let dateInt = parseInt(dateString);
+    res.json({ unix: dateInt, utc: new Date(dateInt).toUTCString() })
+  } else {
+    res.json({ error: "Invalid Dat"});
+  }
+})
+
+app.get("/api/", (req, res) => {
+  res.json({'unix': Date.now(), 'utc': Date()});
+})
